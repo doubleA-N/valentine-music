@@ -27,7 +27,7 @@ export default function Home() {
         <LandingHero onStart={handleStart} isExiting={isExiting} />
       )}
 
-      {started && <MusicPlayer autoPlay={true} />}
+      {started && <MusicPlayer />}
     </main>
   );
 }

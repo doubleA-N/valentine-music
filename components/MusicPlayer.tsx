@@ -8,14 +8,11 @@ import PlayerControls from "./PlayerControls";
 import SongInfo from "./SongInfo";
 import styles from "@/styles/animations.module.css";
 
-interface MusicPlayerProps {
-  autoPlay?: boolean;
-}
+interface MusicPlayerProps {}
 
-export default function MusicPlayer({ autoPlay = false }: MusicPlayerProps) {
+export default function MusicPlayer({}: MusicPlayerProps) {
   const [currentSongIndex, setCurrentSongIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [hasUnmuted, setHasUnmuted] = useState(false);
   const playerRef = useRef<YouTubePlayer | null>(null);
 
   const currentSong = songs[currentSongIndex];
@@ -24,13 +21,7 @@ export default function MusicPlayer({ autoPlay = false }: MusicPlayerProps) {
     playerRef.current = event.target;
     // Set volume to 50% to ensure audio is heard
     event.target.setVolume(50);
-    if (autoPlay) {
-      // Start playing muted (YouTube allows this without user gesture)
-      event.target.mute();
-      event.target.playVideo();
-      setIsPlaying(true);
-    }
-  }, [autoPlay]);
+  }, []);
 
   const onEnd = useCallback(() => {
     setCurrentSongIndex((prev) => (prev + 1) % songs.length);
@@ -40,17 +31,10 @@ export default function MusicPlayer({ autoPlay = false }: MusicPlayerProps) {
     if (event.data === 1) {
       // Video started playing
       setIsPlaying(true);
-      // Unmute after video has started (this is allowed by browser policies)
-      if (autoPlay && !hasUnmuted && playerRef.current) {
-        setTimeout(() => {
-          playerRef.current?.unMute();
-          setHasUnmuted(true);
-        }, 100);
-      }
     } else if (event.data === 2) {
       setIsPlaying(false);
     }
-  }, [autoPlay, hasUnmuted]);
+  }, []);
 
   const handlePlayPause = useCallback(() => {
     if (!playerRef.current) return;
@@ -67,11 +51,25 @@ export default function MusicPlayer({ autoPlay = false }: MusicPlayerProps) {
 
   const handleNext = useCallback(() => {
     setCurrentSongIndex((prev) => (prev + 1) % songs.length);
-  }, []);
+    // Auto-play the next song if currently playing
+    if (isPlaying && playerRef.current) {
+      setTimeout(() => {
+        playerRef.current?.playVideo();
+        playerRef.current?.unMute();
+      }, 100);
+    }
+  }, [isPlaying]);
 
   const handlePrev = useCallback(() => {
     setCurrentSongIndex((prev) => (prev - 1 + songs.length) % songs.length);
-  }, []);
+    // Auto-play the previous song if currently playing
+    if (isPlaying && playerRef.current) {
+      setTimeout(() => {
+        playerRef.current?.playVideo();
+        playerRef.current?.unMute();
+      }, 100);
+    }
+  }, [isPlaying]);
 
   return (
     <div
