@@ -17,7 +17,7 @@ const config: Config = {
         "soft-yellow": "#F9D949",
       },
       fontFamily: {
-        mali: ["Mali", "cursive"],
+        mali: ["var(--font-mali)", "cursive"],
       },
     },
   },
