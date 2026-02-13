@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import YouTube, { YouTubeEvent, YouTubePlayer } from "react-youtube";
 import { songs } from "@/data/songs";
 import VinylRecord from "./VinylRecord";
@@ -8,7 +8,11 @@ import PlayerControls from "./PlayerControls";
 import SongInfo from "./SongInfo";
 import styles from "@/styles/animations.module.css";
 
-export default function MusicPlayer() {
+interface MusicPlayerProps {
+  autoPlay?: boolean;
+}
+
+export default function MusicPlayer({ autoPlay = false }: MusicPlayerProps) {
   const [currentSongIndex, setCurrentSongIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const playerRef = useRef<YouTubePlayer | null>(null);
@@ -20,8 +24,11 @@ export default function MusicPlayer() {
     // Set volume to 50% to ensure audio is heard
     event.target.setVolume(50);
     event.target.unMute();
-    // Don't autoplay on mobile - let user control with play button
-  }, []);
+    if (autoPlay) {
+      event.target.playVideo();
+      setIsPlaying(true);
+    }
+  }, [autoPlay]);
 
   const onEnd = useCallback(() => {
     setCurrentSongIndex((prev) => (prev + 1) % songs.length);
