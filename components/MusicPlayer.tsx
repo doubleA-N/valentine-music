@@ -17,8 +17,10 @@ export default function MusicPlayer() {
 
   const onReady = useCallback((event: YouTubeEvent) => {
     playerRef.current = event.target;
-    event.target.playVideo();
-    setIsPlaying(true);
+    // Set volume to 50% to ensure audio is heard
+    event.target.setVolume(50);
+    event.target.unMute();
+    // Don't autoplay on mobile - let user control with play button
   }, []);
 
   const onEnd = useCallback(() => {
@@ -37,8 +39,10 @@ export default function MusicPlayer() {
     if (!playerRef.current) return;
     if (isPlaying) {
       playerRef.current.pauseVideo();
+      setIsPlaying(false);
     } else {
       playerRef.current.playVideo();
+      setIsPlaying(true);
     }
   }, [isPlaying]);
 
@@ -63,11 +67,12 @@ export default function MusicPlayer() {
             height: "1",
             width: "1",
             playerVars: {
-              autoplay: 1,
+              autoplay: 0,
               controls: 0,
               disablekb: 1,
               fs: 0,
               modestbranding: 1,
+              playsinline: 1,
             },
           }}
           onReady={onReady}

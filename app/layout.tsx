@@ -11,6 +11,7 @@ const mali = Mali({
 export const metadata: Metadata = {
   title: "Valentine's Day Music Player 💕",
   description: "A romantic music player for your special someone",
+  viewport: "width=device-width, initial-scale=1, viewport-fit=cover",
 };
 
 export default function RootLayout({
@@ -20,7 +21,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${mali.variable} font-mali antialiased`}>
+      <body className={`${mali.variable} antialiased`}>
         {children}
       </body>
     </html>
