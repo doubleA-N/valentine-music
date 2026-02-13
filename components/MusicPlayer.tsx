@@ -21,6 +21,8 @@ export default function MusicPlayer({}: MusicPlayerProps) {
     playerRef.current = event.target;
     // Set volume to 50% to ensure audio is heard
     event.target.setVolume(50);
+    event.target.playVideo();
+    setIsPlaying(true);
   }, []);
 
   const onEnd = useCallback(() => {
@@ -83,12 +85,11 @@ export default function MusicPlayer({}: MusicPlayerProps) {
             height: "1",
             width: "1",
             playerVars: {
-              autoplay: 0,
+              autoplay: 1,
               controls: 0,
               disablekb: 1,
               fs: 0,
               modestbranding: 1,
-              playsinline: 1,
             },
           }}
           onReady={onReady}
