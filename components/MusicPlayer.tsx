@@ -44,7 +44,6 @@ export default function MusicPlayer({}: MusicPlayerProps) {
     } else {
       playerRef.current.playVideo();
       playerRef.current.unMute();
-      setHasUnmuted(true);
       setIsPlaying(true);
     }
   }, [isPlaying]);
