@@ -15,6 +15,7 @@ interface MusicPlayerProps {
 export default function MusicPlayer({ autoPlay = false }: MusicPlayerProps) {
   const [currentSongIndex, setCurrentSongIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [hasUnmuted, setHasUnmuted] = useState(false);
   const playerRef = useRef<YouTubePlayer | null>(null);
 
   const currentSong = songs[currentSongIndex];
@@ -23,8 +24,9 @@ export default function MusicPlayer({ autoPlay = false }: MusicPlayerProps) {
     playerRef.current = event.target;
     // Set volume to 50% to ensure audio is heard
     event.target.setVolume(50);
-    event.target.unMute();
     if (autoPlay) {
+      // Start playing muted (YouTube allows this without user gesture)
+      event.target.mute();
       event.target.playVideo();
       setIsPlaying(true);
     }
@@ -36,11 +38,19 @@ export default function MusicPlayer({ autoPlay = false }: MusicPlayerProps) {
 
   const onStateChange = useCallback((event: YouTubeEvent<number>) => {
     if (event.data === 1) {
+      // Video started playing
       setIsPlaying(true);
+      // Unmute after video has started (this is allowed by browser policies)
+      if (autoPlay && !hasUnmuted && playerRef.current) {
+        setTimeout(() => {
+          playerRef.current?.unMute();
+          setHasUnmuted(true);
+        }, 100);
+      }
     } else if (event.data === 2) {
       setIsPlaying(false);
     }
-  }, []);
+  }, [autoPlay, hasUnmuted]);
 
   const handlePlayPause = useCallback(() => {
     if (!playerRef.current) return;
@@ -49,6 +59,8 @@ export default function MusicPlayer({ autoPlay = false }: MusicPlayerProps) {
       setIsPlaying(false);
     } else {
       playerRef.current.playVideo();
+      playerRef.current.unMute();
+      setHasUnmuted(true);
       setIsPlaying(true);
     }
   }, [isPlaying]);
