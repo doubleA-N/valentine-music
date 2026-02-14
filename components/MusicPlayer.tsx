@@ -8,9 +8,13 @@ import PlayerControls from "./PlayerControls";
 import SongInfo from "./SongInfo";
 import styles from "@/styles/animations.module.css";
 
-interface MusicPlayerProps {}
+interface MusicPlayerProps {
+  onNavigateToMusicBox?: () => void;
+}
 
-export default function MusicPlayer({}: MusicPlayerProps) {
+export default function MusicPlayer({
+  onNavigateToMusicBox,
+}: MusicPlayerProps) {
   const [currentSongIndex, setCurrentSongIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const playerRef = useRef<YouTubePlayer | null>(null);
@@ -76,6 +80,16 @@ export default function MusicPlayer({}: MusicPlayerProps) {
     <div
       className={`flex flex-col items-center justify-center min-h-screen px-4 py-8 relative z-10 ${styles.fadeIn}`}
     >
+      {/* Toggle button to Music Box */}
+      {onNavigateToMusicBox && (
+        <button
+          onClick={onNavigateToMusicBox}
+          className="fixed top-4 right-4 z-20 bg-cream text-warm-red px-4 py-2 rounded-xl border-2 border-cozy-brown shadow-[2px_2px_0px_0px_#5C3D2E] hover:shadow-[3px_3px_0px_0px_#5C3D2E] hover:scale-105 active:scale-95 transition-all duration-200"
+        >
+          🎁 Music Box
+        </button>
+      )}
+
       {/* Hidden YouTube player */}
       <div className="absolute w-0 h-0 overflow-hidden">
         <YouTube
